@@ -25,9 +25,11 @@ namespace MailOrderPharmacy_Authorization.Controllers
     public class AuthController : ControllerBase
     {
         private IConfiguration _config;
+        readonly log4net.ILog _log4net;
 
         public AuthController(IConfiguration config)
         {
+            _log4net = log4net.LogManager.GetLogger(typeof(AuthController));
             _config = config;
         }
         string token;
@@ -35,13 +37,14 @@ namespace MailOrderPharmacy_Authorization.Controllers
         [HttpPost]
         public IActionResult Login([FromBody] Authorization auth)
         {
+            _log4net.Info(" Login Initiated");
             IActionResult response = Unauthorized();
             var member = AuthenticateUser(auth);
             if (member != null)
             {
                 var tokenString = GenerateJSONWebToken(member);
-                response = Ok(new { token = tokenString });
-                token = tokenString;
+                return Ok(tokenString);
+                
             }
             
             
